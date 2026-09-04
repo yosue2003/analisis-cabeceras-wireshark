@@ -1,0 +1,81 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2870
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\froman\fcharset0 Times-Bold;\f1\froman\fcharset0 Times-Roman;\f2\fmodern\fcharset0 Courier;
+}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;}
+{\*\expandedcolortbl;;\cssrgb\c0\c0\c0;}
+\margl1440\margr1440\vieww17900\viewh16600\viewkind0
+\deftab720
+\pard\pardeftab720\sa321\partightenfactor0
+
+\f0\b\fs36 \cf0 \expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 \
+\pard\pardeftab720\sa240\partightenfactor0
+
+\f1\b0\fs24 \cf0 ANALISIS DE CABECERAS CON WIRESHARK\
+\
+INTRODUCCION \
+En esta practica utilice Wireshark para observar y analizar diferentes paquetes de red. Mediante las capturas pude comprender como funciona el handshake TCP, una consulta DNS sobre UDP y la trasmici\'f3n de audio mediante RTP. Para realizar el analisis seleccione paquetes espec\'edficos y revise los datos que aparecen en sus cabeceras.\
+\pard\pardeftab720\sa298\partightenfactor0
+\cf0 \outl0\strokewidth0 01-handshake-tcp.png \outl0\strokewidth0 \strokec2  \
+En esta captura observe los tres pasos del handshake TCP entre mi computadora 
+\f2\fs26 192.168.88.59
+\f1\fs24  y el servidor de la UMSS 
+\f2\fs26 167.157.26.90
+\f1\fs24 . Primero mi computadora envio el paquete 638 con la bandera SYN, luego el servidor respondio con el paquete 641 usando SYN-ACK y finalmente mi computadora envio el paquete 642 con ACK. De esta manera se completo la conecci\'f3n y se pudo iniciar la comunicaci\'f3n HTTP.\outl0\strokewidth0 \
+\pard\pardeftab720\partightenfactor0
+\cf0  02-cabecera-syn.png \outl0\strokewidth0 \strokec2 \
+\pard\pardeftab720\sa240\partightenfactor0
+\cf0 En esta imagen analice el paquete 638, enviado desde mi computadora por el puerto temporal 
+\f2\fs26 63971
+\f1\fs24  hacia el puerto HTTP 
+\f2\fs26 80
+\f1\fs24  del servidor. La bandera SYN esta activada porque se esta solicitando el inicio de una conecci\'f3n. El n\'famero de secuencia relativo es 0 y no se transportan datos, ya que este paquete solamente sirve para comenzar el handshake.\
+\pard\pardeftab720\partightenfactor0
+\cf0 \outl0\strokewidth0  03-cabecera-syn-ack.png \outl0\strokewidth0 \strokec2 \
+\pard\pardeftab720\sa240\partightenfactor0
+\cf0 En esta captura observe la respuesta del servidor mediante el paquete 641. El paquete sale desde el puerto 80 y llega al puerto 
+\f2\fs26 63971
+\f1\fs24  de mi computadora. Las banderas SYN y ACK estan activadas, indicando que el servidor acepta la conecci\'f3n y confirma que recibio el primer SYN. El n\'famero de confirmaci\'f3n real es 
+\f2\fs26 2444179545
+\f1\fs24 , que corresponde al n\'famero de secuencia anterior mas uno.\
+\pard\pardeftab720\partightenfactor0
+\cf0 \outl0\strokewidth0  04-cabecera-ack.png \outl0\strokewidth0 \strokec2 \
+\pard\pardeftab720\sa240\partightenfactor0
+\cf0 En esta imagen analice el paquete 642, que completa el handshake. La bandera ACK esta activada para confirmar que mi computadora recibio la respuesta del servidor. El n\'famero de secuencia y el n\'famero de confirmaci\'f3n relativos tienen el valor 1. Despu\'e9s de este paquete empieza la petici\'f3n HTTP, lo que demuestra que la conecci\'f3n fue establecida correctamente.\
+\pard\pardeftab720\partightenfactor0
+\cf0 \outl0\strokewidth0  05-cabecera-udp-dns.png \outl0\strokewidth0 \strokec2 \
+\pard\pardeftab720\sa240\partightenfactor0
+\cf0 En esta captura observe el paquete 1408, enviado desde mi computadora 
+\f2\fs26 192.168.88.59
+\f1\fs24  hacia el servidor DNS 
+\f2\fs26 192.168.88.1
+\f1\fs24 . Mi computadora utilizo el puerto temporal 
+\f2\fs26 50442
+\f1\fs24  y el servidor el puerto 
+\f2\fs26 53
+\f1\fs24 . La longitud UDP es de 51 bytes, de los cuales 43 bytes corresponden a la consulta DNS. UDP permite enviar la consulta rapidamente sin realizar un handshake.\
+\pard\pardeftab720\partightenfactor0
+\cf0 \outl0\strokewidth0 06-cabecera-dns-google.png \outl0\strokewidth0 \strokec2 \
+\pard\pardeftab720\sa240\partightenfactor0
+\cf0 En esta imagen analice la consulta para 
+\f2\fs26 www.google.com
+\f1\fs24 . El identificador de transacci\'f3n es 
+\f2\fs26 0x9c56
+\f1\fs24  y permite relacionar la pregunta con su respuesta. El tipo A indica que se esta buscando una direcci\'f3n IPv4 y la clase IN significa que pertenece a Internet. El paquete 1408 contiene la pregunta y el paquete 1409 contiene la respuesta, donde se muestra la direcci\'f3n 
+\f2\fs26 142.251.155.119
+\f1\fs24 .\
+\pard\pardeftab720\partightenfactor0
+\cf0 \outl0\strokewidth0  07-cabecera-udp-rtp.png\outl0\strokewidth0 \strokec2 \
+\pard\pardeftab720\sa240\partightenfactor0
+\cf0 En esta captura analice el paquete RTP n\'famero 34, enviado desde 
+\f2\fs26 10.1.3.143:5000
+\f1\fs24  hacia 
+\f2\fs26 10.1.6.18:2006
+\f1\fs24 . El tipo de contenido es G.711 PCMA, por lo cual el paquete transporta audio de una llamada. El n\'famero de secuencia 
+\f2\fs26 59133
+\f1\fs24  ayuda a ordenar los paquetes, el timestamp 
+\f2\fs26 240
+\f1\fs24  permite reproducir el audio en el momento correcto y el SSRC 
+\f2\fs26 0xdee0ee8f
+\f1\fs24  identifica al dispositivo que envia el audio.\
+}
